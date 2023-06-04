@@ -26,9 +26,9 @@ public class NoticiaDAO implements CRUD {
     Noticia n = new Noticia();
 
     @Override
-    public List listar() {
+    public List<Noticia> listar() {
         ArrayList<Noticia> list = new ArrayList<>();
-        String sql = "select * from noticias";
+        String sql = "SELECT * FROM noticias";
         try {
             con = cn.getConnection();
             ps = con.prepareStatement(sql);
@@ -39,12 +39,11 @@ public class NoticiaDAO implements CRUD {
                 per.setTitulo(rs.getString("titulo"));
                 per.setContenido(rs.getString("contenido"));
                 per.setFechaPublicacion(rs.getTimestamp("fechaPublicacion"));
-                per.setIdUsuarioPublicante(rs.getInt("idUsuarioPublicante")); // Aquí he cambiado Timestamp por getInt, ya que me parece que idUsuarioPublicante es un id (número entero), pero modifícalo según tu modelo de datos.
+                per.setIdUsuarioPublicante(rs.getInt("idUsuarioPublicante"));
 
                 list.add(per);
             }
         } catch (Exception e) {
-            // Sería buena idea imprimir el error para entender qué salió mal en caso de excepción.
             e.printStackTrace();
         }
         return list;
@@ -56,38 +55,38 @@ public class NoticiaDAO implements CRUD {
     }
 
     public boolean add(Noticia per, int idUsuarioPublicante) {
-    String sql="insert into noticias(idUsuarioPublicante Titulo, Contenido, TechaPublicacion)values( '"+per.getIdUsuarioPublicante()+"','"+per.getTitulo()+"','"+per.getContenido()+"','"+per.getFechaPublicacion()+"')";
-     try {
-           con = cn.getConnection();
+    String sql = "INSERT INTO noticias (idUsuarioPublicante, titulo, contenido, fechaPublicacion) VALUES (?, ?, ?, ?)";
+        try {
+            con = cn.getConnection();
             ps = con.prepareStatement(sql);
-         ps.setInt(1, idUsuarioPublicante); // Usa idUsuarioPublicante aquí
-        ps.setString(2, per.getTitulo());
-        ps.setString(3, per.getContenido());
-        ps.setTimestamp(4, per.getFechaPublicacion());
-
-            System.out.println("Antes de ejecutar ps.executeUpdate()");
+            ps.setInt(1, idUsuarioPublicante);
+            ps.setString(2, per.getTitulo());
+            ps.setString(3, per.getContenido());
+            ps.setTimestamp(4, per.getFechaPublicacion());
 
             ps.executeUpdate();
 
-            System.out.println("Después de ejecutar ps.executeUpdate()");
-
             return true;
         } catch (Exception e) {
-            System.out.println("Se produjo un error: " + e.getMessage());
             e.printStackTrace();
             return false;
         } finally {
             try {
-                if(ps != null) ps.close();
-                if(con != null) con.close();
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-    }
+        }
     }
 
     @Override
-    public boolean add(Noticia per) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+   public boolean add(Noticia per) {
+    return add(per, per.getIdUsuarioPublicante());
+}
+
 }

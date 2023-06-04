@@ -8,12 +8,14 @@
 <%@page import="ModeloDAO.NoticiaDAO"%>
 <%@page import="java.util.List"%>
 <%@page import="Modelo.Noticia"%>
+<%@page import="Modelo.Usuario"%>
+<%@page import="ModeloDAO.UsuarioDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Noticias</title>
     </head>
     <body>
         <div class="container">
@@ -25,42 +27,36 @@
                 <thead>
                     <tr>
                         <th class="text-center">ID</th>
-                        <th class="text-center">titulo</th>
-                        <th class="text-center">contenido</th>
-                        <th class="text-center">fechaPublicacion</th>
-                        <th class="text-center">idUsuarioPublicante</th>
-
+                        <th class="text-center">Título</th>
+                        <th class="text-center">Contenido</th>
+                        <th class="text-center">Fecha de Publicación</th>
+                        <th class="text-center">Usuario Publicante</th>
                     </tr>
                 </thead>
-                <%
-                    NoticiaDAO dao = new NoticiaDAO();
-                    List<Noticia> list = dao.listar();
-                    Iterator<Noticia> iter = list.iterator();
-                    Noticia per = null;
-                    while (iter.hasNext()) {
-                        per = iter.next();
-
-                %>
-
                 <tbody>
+                    <% 
+                        NoticiaDAO ndao = new NoticiaDAO();
+                        List<Noticia> list = ndao.listar();
+                        UsuarioDAO udao = new UsuarioDAO();
+                        for(Noticia n : list){
+                            Usuario usuario = udao.obtenerUsuarioPorId(n.getIdUsuarioPublicante());
+                            String nombreUsuario = "";
+                            if (usuario != null) {
+                                nombreUsuario = usuario.getNombre();
+                            }
+                    %>
                     <tr>
-                        <td class="text-center"><%= per.getIdNoticia()%></td>
-                        <td class="text-center"><%= per.getTitulo()%></td>
-                        <td class="text-center"><%= per.getContenido()%></td>
-                        <td class="text-center"><%= per.getFechaPublicacion()%></td>
-                        <td class="text-center"><%= per.getIdUsuarioPublicante()%></td>
-
-                <a>Editar</a>
-                <a>Remove</a>
-
-                </td>
-                </tr>
-                <%}%>
+                        <td><%= n.getIdNoticia() %></td>
+                        <td><%= n.getTitulo() %></td>
+                        <td><%= n.getContenido() %></td>
+                        <td><%= n.getFechaPublicacion() %></td>
+                        <td><%= nombreUsuario %></td>
+                    </tr>
+                    <% 
+                        }
+                    %>
                 </tbody>
-
-
             </table>
-
         </div>
     </body>
 </html>
